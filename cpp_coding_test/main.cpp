@@ -1,63 +1,48 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
-//기능개발
+int solution(std::vector<int> priorities, int position) {
+    int ans = 1;
 
-using namespace std;
+    while (1) {
+        //find max
+        std::vector<int>::iterator iter = std::max_element(priorities.begin(), priorities.end());
+        //int max_val = *iter;
+        long max_pos = std::distance(priorities.begin(), iter);
+        
+        //move elements
+        for (int i = 0; i < max_pos; i++) {
+            priorities.push_back(priorities[0]); // copy back
+            priorities.erase(priorities.begin()); // remove front
+            position--;
+            if (position < 0) position = (int)priorities.size() - 1;
+        }
 
-vector<int> solution(vector<int> progresses, vector<int> speeds) {
-    vector<int> answer;
-    
-    vector<int> remains(progresses.size());
-    for (int i=0; i<progresses.size(); i++) {
-        remains[i] = ((100-progresses[i]-1) / speeds[i]) + 1;
+        //check
+        if (position == 0) return ans;
+
+        //remove first element
+        priorities.erase(priorities.begin());
+        position--;
+        ans++;
     }
 
-    int cur_value = -1;
-    int cur_len = 0;
-    
-    for (int i=0; i<remains.size(); i++) {
-        if (cur_value < remains[i]) {
-            answer.push_back(cur_len);
-            cur_value = remains[i];
-            cur_len = 1;
-        }
-        else {
-            cur_len++;
-        }
-    }
-    answer.push_back(cur_len);
-    answer.erase(answer.begin());
-    
-    return answer;
+    return 0;
 }
 
 
 int main() {
-    vector<int> progresses1 = {93, 30, 55};
-    vector<int> speeds1 = {1, 30, 5};
-    vector<int> ans1 = solution(progresses1, speeds1);
-    for(int a : ans1) {
-        cout << a; //[2, 1]
-    }
-    cout << endl;
+    std::vector<int> priorities1 = {2, 1, 3, 2};
+    int location1 = 2;
+    int ans1 = solution(priorities1, location1);//1
+    std::cout << ans1 << std::endl;
     
-    vector<int> progresses2 = {95, 90, 99, 99, 80, 99};
-    vector<int> speeds2 = {1, 1, 1, 1, 1, 1};
-    vector<int> ans2 = solution(progresses2, speeds2);
-    for(int a : ans2) {
-        cout << a; //[1, 3, 2]
-    }
-    cout << endl;
-    
-    vector<int> progresses3 = {99, 98, 97, 96, 95, 94};
-    vector<int> speeds3 = {1, 1, 1, 1, 1, 1};
-    vector<int> ans3 = solution(progresses3, speeds3);
-    for(int a : ans3) {
-        cout << a; //[1, 3, 2]
-    }
-    cout << endl;
+    std::vector<int> priorities2 = {1,1,9,1,1,1};
+    int location2 = 0;
+    int ans2 = solution(priorities2, location2);//5
+    std::cout << ans2 << std::endl;
     
     return 0;
 }
