@@ -1,49 +1,58 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <queue>
+#include <set>
 
-using namespace std;
+//이중우선순위큐
 
-//더 맵게
+std::vector<int> solution(std::vector<std::string> operations) {
+    std::vector<int> answer;
+    std::multiset<int> set;
 
-int solution(vector<int> scoville, int K) {
-    int answer = 0;
-    //priority_queue<int> q;
-    priority_queue<int, vector<int>, std::greater<int>> q;
-    
-    for (int i : scoville) {
-        q.push(i);
-    }
-
-//    while (!q.empty()) {
-//        cout << q.top() << ",";
-//        q.pop();
-//    }
-    
-    while (q.top()<K) {
-        if (q.size()<2) return -1;
-        
-        int least = q.top(); q.pop();
-        int second = q.top(); q.pop();
-        int new_scoville = least + second * 2;
-        q.push(new_scoville);
-        
-        answer++;
+    for (std::string s : operations) {
+        if (s.find("I") != std::string::npos) {
+            std::string sub = s.substr(2);
+            int i = std::atoi(sub.c_str());
+            //std::cout << i << std::endl;
+            set.insert(i);
+        }
+        else if (s.find("D -1") != std::string::npos) {
+            if (set.empty()) continue;
+            set.erase(set.begin());
+        }
+        else if (s.find("D 1") != std::string::npos) {
+            if (set.empty()) continue;
+            set.erase(--set.end());
+        }
+        else {
+            ;//??
+        }
     }
     
-    return answer;
+    if (set.empty()) {
+        answer.push_back(0);
+        answer.push_back(0);
+        return answer;
+    }
+    else {
+        answer.push_back(*(--set.end()));
+        answer.push_back(*set.begin());
+        return answer;
+    }
 }
 
-
 int main() {
-    vector<int> scoville = {1, 2, 3, 9, 10, 12};
-    int K = 7;
-    std::cout << solution(scoville, K) << endl;
+    std::vector<std::string> operations = {"I 16","D 1"};
+    std::vector<int> sol = solution(operations);
+    std::cout << sol[0] << ", " << sol[1] << std::endl;
     
-    vector<int> scoville2 = {1,2,3};
-    int K2 = 14;
-    std::cout << solution(scoville2, K2) << endl;
+    std::vector<std::string> op2 = {"I 7","I 5","I -5","D -1"};
+    std::vector<int> sol2 = solution(op2);
+    std::cout << sol2[0] << ", " << sol2[1] << std::endl;
+    
+    std::vector<std::string> op3 = {"I -1","I 10","I 3","D 1"};
+    std::vector<int> sol3 = solution(op3);
+    std::cout << sol3[0] << ", " << sol3[1] << std::endl;
     
     return 0;
 }
