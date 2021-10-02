@@ -2,44 +2,54 @@
 #include <vector>
 #include <iostream>
 #include <set>
+#include <algorithm>
 
 //이중우선순위큐
 
 std::vector<int> solution(std::vector<std::string> operations) {
     std::vector<int> answer;
-    std::multiset<int> set;
 
-    for (std::string s : operations) {
+    while (!operations.empty()) {
+        std::string s = operations.front();
+        operations.erase(operations.begin());
+
         if (s.find("I") != std::string::npos) {
             std::string sub = s.substr(2);
             int i = std::atoi(sub.c_str());
             //std::cout << i << std::endl;
-            set.insert(i);
-        }
-        else if (s.find("D -1") != std::string::npos) {
-            if (set.empty()) continue;
-            set.erase(set.begin());
+            answer.push_back(i);
+            std::sort(answer.begin(), answer.end(), [] (int a, int b) {
+                return a>b;
+            });
         }
         else if (s.find("D 1") != std::string::npos) {
-            if (set.empty()) continue;
-            set.erase(--set.end());
+            if (answer.empty()) continue;
+            answer.erase(answer.begin());
+        }
+        else if (s.find("D -1") != std::string::npos) {
+            if (answer.empty()) continue;
+            answer.erase(answer.end()-1);
         }
         else {
             ;//??
         }
     }
-    
-    if (set.empty()) {
+
+    if (answer.empty()) {
         answer.push_back(0);
         answer.push_back(0);
         return answer;
     }
     else {
-        answer.push_back(*(--set.end()));
-        answer.push_back(*set.begin());
+        int f = answer.front();
+        int b = answer.back();
+        answer.clear();
+        answer.push_back(f);
+        answer.push_back(b);
         return answer;
     }
 }
+
 
 int main() {
     std::vector<std::string> operations = {"I 16","D 1"};
