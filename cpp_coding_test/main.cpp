@@ -1,68 +1,63 @@
+#include <iostream>
+
 #include <string>
 #include <vector>
-#include <iostream>
-#include <set>
 #include <algorithm>
 
-//이중우선순위큐
+using namespace std;
+//디스크 컨트롤러
 
-std::vector<int> solution(std::vector<std::string> operations) {
-    std::vector<int> answer;
+int solution(vector<vector<int>> jobs) {
+    //set<vector<int>> s (jobs.begin(), jobs.end());
+    //시작시간으로 정렬
+    sort(jobs.begin(), jobs.end(), [](vector<int>a, vector<int>b) {
+        return a.front() < b.front();
+    });
+    jobs.push_back({1000*10000,10000});
+    
+    int begin_time = 0;
+    int total_time = 0;
+    vector<vector<int>> jobs_can_begin;
+    
+    for(int i=0; i<jobs.size(); ) {
+        vector<int> job = jobs[i];
+        
+        //time보다 작은 것 모으기
+        if (begin_time >= job.front()) {
+            jobs_can_begin.push_back(job);
+            i++;//next item
+            continue;
+        }
 
-    while (!operations.empty()) {
-        std::string s = operations.front();
-        operations.erase(operations.begin());
-
-        if (s.find("I") != std::string::npos) {
-            std::string sub = s.substr(2);
-            int i = std::atoi(sub.c_str());
-            //std::cout << i << std::endl;
-            answer.push_back(i);
-            std::sort(answer.begin(), answer.end(), [] (int a, int b) {
-                return a>b;
-            });
+        //소요시간으로 정렬
+        sort(jobs_can_begin.begin(), jobs_can_begin.end(), [](vector<int>a, vector<int>b) {
+            return a.back() < b.back();
+        });
+        
+        //시간 업데이트
+        for(vector<int> job : jobs_can_begin) {
+            total_time += begin_time + job.back() - job.front();//소요시간 - 시작시간
+            begin_time += job.back();//시작한 일들의 모든 소요시간을 더한다.
         }
-        else if (s.find("D 1") != std::string::npos) {
-            if (answer.empty()) continue;
-            answer.erase(answer.begin());
-        }
-        else if (s.find("D -1") != std::string::npos) {
-            if (answer.empty()) continue;
-            answer.erase(answer.end()-1);
-        }
-        else {
-            ;//??
+        
+        //reset
+        jobs_can_begin.clear();
+        
+        if (i==jobs.size()-1) {
+            break;
         }
     }
-
-    if (answer.empty()) {
-        answer.push_back(0);
-        answer.push_back(0);
-        return answer;
-    }
-    else {
-        int f = answer.front();
-        int b = answer.back();
-        answer.clear();
-        answer.push_back(f);
-        answer.push_back(b);
-        return answer;
-    }
+    
+    return total_time / (jobs.size()-1);
 }
 
 
 int main() {
-    std::vector<std::string> operations = {"I 16","D 1"};
-    std::vector<int> sol = solution(operations);
-    std::cout << sol[0] << ", " << sol[1] << std::endl;
-    
-    std::vector<std::string> op2 = {"I 7","I 5","I -5","D -1"};
-    std::vector<int> sol2 = solution(op2);
-    std::cout << sol2[0] << ", " << sol2[1] << std::endl;
-    
-    std::vector<std::string> op3 = {"I -1","I 10","I 3","D 1"};
-    std::vector<int> sol3 = solution(op3);
-    std::cout << sol3[0] << ", " << sol3[1] << std::endl;
+    //vector<vector<int>> jobs = { {0, 3}, {1, 9}, {2, 6} };
+    vector<vector<int>> jobs = { {2, 6}, {0, 3}, {1, 9} };
+    int sol = solution(jobs);
+    std::cout << sol << std::endl;
+
     
     return 0;
 }
