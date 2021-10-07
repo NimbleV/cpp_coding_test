@@ -1,63 +1,48 @@
-#include <iostream>
-
+#include "iostream"
 #include <string>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
-//디스크 컨트롤러
 
-int solution(vector<vector<int>> jobs) {
-    //set<vector<int>> s (jobs.begin(), jobs.end());
-    //시작시간으로 정렬
-    sort(jobs.begin(), jobs.end(), [](vector<int>a, vector<int>b) {
-        return a.front() < b.front();
-    });
-    jobs.push_back({1000*10000,10000});
-    
-    int begin_time = 0;
-    int total_time = 0;
-    vector<vector<int>> jobs_can_begin;
-    
-    for(int i=0; i<jobs.size(); ) {
-        vector<int> job = jobs[i];
-        
-        //time보다 작은 것 모으기
-        if (begin_time >= job.front()) {
-            jobs_can_begin.push_back(job);
-            i++;//next item
-            continue;
-        }
+vector<pair<int, int>> sol(int n, int m, int x, int y, vector<vector<int>> queries) {
+    vector<pair<int, int>> starts;
+    if (queries.empty()) {
+        starts.push_back(make_pair(x, y));
+        return starts;
+    }
 
-        //소요시간으로 정렬
-        sort(jobs_can_begin.begin(), jobs_can_begin.end(), [](vector<int>a, vector<int>b) {
-            return a.back() < b.back();
-        });
-        
-        //시간 업데이트
-        for(vector<int> job : jobs_can_begin) {
-            total_time += begin_time + job.back() - job.front();//소요시간 - 시작시간
-            begin_time += job.back();//시작한 일들의 모든 소요시간을 더한다.
-        }
-        
-        //reset
-        jobs_can_begin.clear();
-        
-        if (i==jobs.size()-1) {
-            break;
-        }
+    vector<int> query = queries.back();
+    queries.erase(queries.end());
+    
+    //query를 이용해서 starts를 구체적으로 계산하고 starts에 저장한다.
+    //starts = ???
+    
+    long long sum = 0;
+    vector<pair<int, int>> new_starts;//(starts.begin(), starts.end());//copy
+    for (pair<int, int> s : starts) {
+        new_starts = sol(n, m, s.first, s.second, queries);
+        sum += new_starts.size();
     }
     
-    return total_time / (jobs.size()-1);
+    return new_starts;
 }
 
+long long solution(int n, int m, int x, int y, vector<vector<int>> queries) {
+    long long answer = -1;
+    
+    answer = sol(n, m, x, y, queries);
+    
+    return answer;
+}
 
 int main() {
-    //vector<vector<int>> jobs = { {0, 3}, {1, 9}, {2, 6} };
-    vector<vector<int>> jobs = { {2, 6}, {0, 3}, {1, 9} };
-    int sol = solution(jobs);
-    std::cout << sol << std::endl;
-
+    vector<vector<int>> query1 = {{2,1},{0,1},{1,1},{0,1},{2,1}};//4
+    long long sol1 = solution(2,2,0,0,query1);
+    std::cout << sol1 << endl;
     
+    vector<vector<int>> query2 = {{3,1},{2,2},{1,1},{2,3},{0,1},{2,1}};//2
+    long long sol2 = solution(2,5,0,1,query2);
+    std::cout << sol2 << endl;
+
     return 0;
 }
