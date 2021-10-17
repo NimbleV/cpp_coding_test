@@ -1,26 +1,32 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include "iostream"
 
 using namespace std;
 
+// dynamic programing
 int shortest(int start, vector<int> NotA, int totalLen) {
     if(NotA.empty()) return 0;
-    
+
     int r = NotA.front();
     NotA.erase(NotA.begin());
     int rr;
-    if(r-start>=0) rr = (r - start) + shortest(r, NotA, totalLen);
-    else rr = (totalLen - start + r) + shortest(r, NotA, totalLen);
+    if(r-start>=0)
+        rr = (r - start) + shortest(r, NotA, totalLen);
+    else
+        rr = (totalLen - start + r) + shortest(r, NotA, totalLen);
     NotA.insert(NotA.begin(), r);
-    
+
     int l = NotA.back();
     NotA.erase(NotA.end()-1);
     int ll;
-    if (start-l>=0) ll = (start - l) +  shortest(l, NotA, totalLen);
-    else ll = (totalLen - l + start) +  shortest(l, NotA, totalLen);
+    if (start-l>=0)
+        ll = (start - l) +  shortest(l, NotA, totalLen);
+    else
+        ll = (totalLen - l + start) +  shortest(l, NotA, totalLen);
     NotA.push_back(l);
-    
+
     return min(rr, ll);
 }
 
@@ -40,6 +46,7 @@ int solution(string name) {
 }
 
 
+//// greedy
 //int LUT[] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,12,11,10,9,8,7,6,5,4,3,2,1 };
 //
 //int solution(string name) {
@@ -58,20 +65,38 @@ int solution(string name) {
 //    return answer;
 //}
 
-#include "iostream"
+
 int main() {
+    {
+        int s = solution("JDIAGKLPALEINAAEBINQ");//149
+        cout << s << endl;
+    }
     {
         int s = solution("JEROEN");//56
         cout << s << endl;
     }
-    
     {
         int s = solution("JAN");//23
         cout << s << endl;
     }
-
     {
         int s = solution("CANAAAAANAN");//48
+        cout << s << endl;
+    }
+    {
+        int s = solution("BBBBAAAABA");//12
+        cout << s << endl;
+    }
+    {
+        int s = solution("BBBBAAAAAB");//10
+        cout << s << endl;
+    }
+    {
+        int s = solution("AABAAAAAAABBB");//11
+        cout << s << endl;
+    }
+    {
+        int s = solution("AAB");//2
         cout << s << endl;
     }
     
